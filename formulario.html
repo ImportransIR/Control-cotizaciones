@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      background: #023047;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #ffb703;
+    }
+
+    .lineas-container {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+  <script>
+    var clientes = [
+      "7 SEAS ENERGY S.A.S BIC",
+      "ADVANCED RADIOTHERAPY CORPORATION S.A.",
+      "ADMINISTRADORA COUNTRY S.A.S",
+      "ALFA NUCLEAR S.A.S.",
+      "ARIES CARGO LOGISTICS S A S",
+      "ASOCIACION DE EXALUMNOS Y PROFESIONALES DEL INSTITUTO NACIONAL DE CANCEROLOGIA",
+      "ASOCIACION MEDICA DE MEDICINA NUCLEAR LIMITADA",
+      "BAKER HUGHES DE COLOMBIA",
+      "BAVARIA & CIA S C A",
+      "BAYER S.A.",
+      "BIMEDCO",
+      "CASA CIENTIFICA BLANCO Y COMPAÑIA S.A.S.",
+      "CEMENTOS ARGOS S.A.",
+      "CENTRAL CERVECERA DE COLOMBIA S.A.S",
+      "CENTRO DE ALTA TECNOLOGIA DIAGNOSTICA DEL EJE CAFETERO S.A. CEDICAF S.A.",
+      "CENTRO DE CUIDADOS CARDIONEUROVASCULARES PABON S.A.S",
+      "CENTRO DE IMAGENES DIAGNOSTICAS SANTA MARTA S.A.S",
+      "CENTRO DE MEDICINA NUCLEAR DEL CARIBE LTDA.",
+      "CENTRO DE MEDICINA NUCLEAR DEL TOLIMA LIMITADA",
+      "CENTRO HOSPITALARIO SERENA DEL MAR S.A.",
+      "CENTRO ONCOLOGICO DE ANTIOQUIA S.A.S.",
+      "CENTURY WIRELINE SUCURSAL COLOMBIA",
+      "CERRO MATOSO S.A.",
+      "CERVECERIA DEL VALLE S.A.S.",
+      "CERVECERIA UNION S.A.",
+      "CICLOTRON CARIBE SAS",
+      "CICLOTRON COLOMBIA S.A.S",
+      "CLÍNICA CENTRAL DEL EJE S.A.S",
+      "CLINICA COLSANITAS S A",
+      "CLINICA DE OCCIDENTE S.A.",
+      "CLINICA INTERNACIONAL DE ALTA TECNOLOGIA CLINALTEC S.A.S.",
+      "CLINICA LA ASUNCION",
+      "CLINICA LOS NOGALES S.A.S",
+      "CLINICA IMBANACO S.A.S",
+      "CLINICA MARLY",
+      "CLINICA MEDELLIN",
+      "COLOMBIA'S SUPPLY S.A.S.",
+      "COLOMBIANA TISSUE S.A.S",
+      "COMCI S.A.S",
+      "COMPAGNIE D'OPERATIONS PETROLIERES SCHLUMBERGER SUCURSAL COLOMBIA",
+      "DIETRICH LOGISTICS INTERNACIONAL S. A. S. - DLOG",
+      "DIRIMPEX S A S",
+      "DISTRITO ESPECIAL INDUSTRIAL Y PORTUARIO DE BARRANQUILLA",
+      "ECKERT & ZIEGLER ISOTOPE",
+      "E.O.A SERVICIO S.A.",
+      "EMPRESA SOCIAL DEL ESTADO HOSPITAL UNIVERSITARIO DE SANTANDER E.S.E",
+      "ENLOG STRATEGICS SERVICES LLC DBA ALARA LOGISTICS",
+      "ECOWATT INGENIERIA S.A.S.",
+      "ERAZO VALENCIA SAS",
+      "ESCANOGRAFIA",
+      "ESPECIALIDADES MÉDICAS METROPOLITANAS S.A.S.",
+      "EXPRO GULF LIMITED",
+      "FRACHT COLOMBIA S.A.S",
+      "FUNDACION ABOOD SHAIO",
+      "FUNDACION ALEJANDRO LONDOÑO",
+      "FUNDACION CARDIO INFANTIL-INSTITUTO DE CARDIOLOGIA",
+      "FUNDACION CARDIOVASCULAR DE COLOMBIA",
+      "FUNDACION CTIC - CENTRO DE TRATAMIENTO E INVESTIGACIÓN SOBRE CÁNCER LUIS CARLOS SARMIENTO ANGULO",
+      "FUNDACIÓN LA LIGA AMA SALVAR VIDAS",
+      "FUNDACION SANTA FE DE BOGOTA",
+      "FUNDACION VALLE DEL LILI",
+      "G. BARCO S.A.",
+      "GAMANUCLEAR LTDA",
+      "GAMMA SERVICES S. A. S.",
+      "GAMASCAN S.A.S.",
+      "GE HEALTHCARE COLOMBIA S.A.S.",
+      "GENERAL MEDICA DE COLOMBIA S A S",
+      "GEOZAM LABORATORIO INGENIEROS CONSULTORES S.A.S",
+      "GUACAMAYA ENERGY SERVICES S A S",
+      "HIGH TECH METROLOGY CENTER S.A.S",
+      "HOSPITAL PABLO TOBON URIBE",
+      "HOSPIMEDICS SAS EN LIQUIDACION",
+      "HOSPITAL MILITAR CENTRAL",
+      "HOSPITAL UNIVERSITARIO DEL VALLE EVARISTO GARCIA E.S.E.",
+      "IDICOL S A S",
+      "IMO - INSTITUTO MÉDICO ONCOLÓGICO S.A.S",
+      "INDUSTRIA NACIONAL DE GASEOSAS S.A",
+      "INNERGY S.A.S",
+      "INNOVACION TECNOLOGICA S.A.S.",
+      "INTERCLINICA AVA S.A.S",
+      "INSTITUTO DE CANCEROLOGIA DE SUCRE S.A.S",
+      "INSTITUTO DE DIAGNOSTICO MEDICO S.A.",
+      "INSTITUTO DE MEDICINA NUCLEAR MEDINUCLEAR S.A.",
+      "INSTITUTO MÉDICO DE ALTA TECNOLOGÍA S.A.S.",
+      "INSTITUTO NACIONAL DE CANCEROLOGIA",
+      "INTERNATIONAL NUCLEAR INDUSTRY SAS",
+      "IONOS DIRECTIONAL SERVICES SAS",
+      "ISOMEDIX TECHNOLOGY S A S",
+      "J. RESTREPO EQUIPHOS S A S",
+      "JUAN LUIS LONDOÑO BLAIR",
+      "KHYMOS",
+      "LATINOAMERICANA DE CONSTRUCCIONES S.A.S",
+      "LEVARE SERVICES LTD. SUCURSAL COLOMBIA",
+      "LIGA CONTRA EL CANCER RISARALDA",
+      "MAXIM & FISHING SOLUTIONS PROVIDE S A S",
+      "MEDICINA INTENSIVA DEL TOLIMA S.A.",
+      "MEDICINA NUCLEAR DE GIRARDOT S.A.S.",
+      "MEDICINA NUCLEAR DIAGNOSTICA S.A.S.",
+      "MEDICINA NUCLEAR S.A.",
+      "MEDINUCLEAR S.A.S",
+      "M.A.S MEDICINA NUCLEAR S.A.S",
+      "MULTIMODAL DE TRANSPORTES S.A.S MULTITRANS S.A.S",
+      "NEUROELECTRODIAGNOSTICO SH DEL LLANO S.A.S",
+      "NOBLE DRILLING (LUXEMBOURG) SARL - SUCURSAL COLOMBIA",
+      "NOVARTIS DE COLOMBIA S.A",
+      "NUCLEAR ESPECIALISTAS S.A.S",
+      "NUCLEAR MEDICINE WORLD S.A.S",
+      "NUCLEODIAGNOSTICO LIMITADA",
+      "NUCLEOFARMA S.A.S.",
+      "NUCLEOTECNICA LTDA",
+      "OPR-HELP SAS",
+      "ORGANIZACION CLINICA BONNADONA - PREVENIR S.A.S",
+      "ORGANIZACION CLINICA GENERAL DEL NORTE S.A.S",
+      "PATRIMONIOS AUTONOMOS FIDUCIARIA POPULAR S.A.",
+      "PET CT BUCARAMANGA SAS",
+      "PET CT CUCUTA S.A.S.",
+      "POPORO TECHNOLOGIES SAS",
+      "PRIOMH SAS",
+      "PROMOTORA MEDICA LAS AMERICAS S.A",
+      "PROTACTICS S.A.S.",
+      "RADIO FARMACIA TRACERLAB SAS",
+      "RADIOFARMACIA DEL CARIBE SAS",
+      "RADIOLOGICAL PROTECTION SERVICES SAS",
+      "REGAMA DEL CARIBE LTDA",
+      "SABBAG RADIOLOGOS S.A.",
+      "SCHLUMBERGER SURENCO S.A.",
+      "SELIG DE COLOMBIA S.A.S",
+      "SEQUIMED S.A.S.",
+      "SERVICIO GEOLÓGICO COLOMBIANO",
+      "SERVICIOS DE INGENIERIA Y FISICA MEDICA SAS",
+      "SERVICIOS ESPECIALIZADOS FCB",
+      "SERVICIOS LOGISTICOS GLOBALES SAS",
+      "SIEVERT S.A.S.",
+      "SISTEMAS DE INGENIERIA S.A.S",
+      "SMARTSTAR S.A.S",
+      "SOLU TEC SOLUCIONES TECNOLOGICAS S.A.S",
+      "TADASHI S.A.S - CENTROS DE IMAGENES ESPECIALIZADAS (CIE)",
+      "UNIDADES DIAGNOSTICAS ESPECIALIZADAS S.A.S.",
+      "UNION VITAL S.A.S",
+      "UNIVERSIDAD CATOLICA DE MANIZALES",
+      "UNIVERSIDAD NACIONAL DE COLOMBIA"
+    ];
+
+
+    var centrosCostos = [
+      "Administración", "Transporte Material Radiactivo",
+      "Radiofármacos", "Asesorías","Almacenamiento", "Productos" , "Otros servicios"
+    ];
+
+    function cargarListas() {
+      var clienteSelect = document.getElementById("cliente");
+      var centroCostosSelect = document.getElementById("centro_costos");
+
+      if (!clienteSelect || !centroCostosSelect) {
+        console.error("❌ Error: No se encontraron los elementos <select>");
+        return;
+      }
+
+      clientes.forEach(cliente => {
+        var option = document.createElement("option");
+        option.value = cliente;
+        option.textContent = cliente;
+        clienteSelect.appendChild(option);
+      });
+
+      centrosCostos.forEach(centro => {
+        var option = document.createElement("option");
+        option.value = centro;
+        option.textContent = centro;
+        centroCostosSelect.appendChild(option);
+      });
+
+      console.log("✅ Listas cargadas correctamente.");
+    }
+
+    function generarLineas() {
+      var cantidad = document.getElementById("cantidad_lineas").value;
+      var contenedor = document.getElementById("lineas");
+      contenedor.innerHTML = "";
+
+      for (var i = 0; i < cantidad; i++) {
+        var div = document.createElement("div");
+        div.innerHTML = '<input type="text" name="descripcion[]" placeholder="Descripción" required>';
+        contenedor.appendChild(div);
+      }
+    }
+
+    function enviarFormulario() {
+    var form = document.getElementById("formulario");
+
+    var cantidadLineas = document.getElementById("cantidad_lineas").value;
+    var lineasContainer = document.getElementById("lineas");
+
+    var fechaSolicitud = form["fecha_solicitud"].value;
+    var centroCostos = form["centro_costos"].value;
+    var cliente = form["cliente"].value;
+    var numeroCotizacion = form["numero_cotizacion"].value;
+    var linkCotizacion = form["link_cotizacion"].value;
+
+    // Validaciones de campos obligatorios
+    if (!fechaSolicitud || !centroCostos || !cliente || !numeroCotizacion || !linkCotizacion) {
+        alert("⚠️ Por favor, complete todos los campos obligatorios.");
+        return;
+    }
+
+    if (!cantidadLineas || cantidadLineas < 1 || lineasContainer.children.length === 0) {
+        alert("⚠️ Debe agregar al menos una línea de descripción.");
+        return;
+    }
+
+    var formData = new FormData(form);
+    var jsonObject = {};  
+
+    formData.forEach((value, key) => {
+      if (!jsonObject[key]) {
+        jsonObject[key] = value;
+      } else {
+        if (!Array.isArray(jsonObject[key])) {
+          jsonObject[key] = [jsonObject[key]];
+        }
+        jsonObject[key].push(value);
+      }
+    });
+
+    var boton = document.querySelector("button[onclick='enviarFormulario()']");
+    boton.disabled = true;
+    boton.textContent = "Enviando ...";
+
+    google.script.run
+      .withSuccessHandler(() => {
+          alert("✅ Formulario enviado correctamente.");
+          form.reset();
+          document.getElementById("lineas").innerHTML = ""; // Limpiar líneas después de enviar
+          boton.disabled = false;
+          boton.textContent = "Enviar";
+      })
+      .withFailureHandler((error) => {
+        alert("❌ Error al enviar: " + (error && error.message ? error.message : error));
+        boton.disabled = false; boton.textContent = "Enviar";
+      })
+      .guardarDatos(jsonObject);
+  }
+
+    document.addEventListener("DOMContentLoaded", cargarListas);
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>Formulario de Registro</h2>
+
+    <p>Recuerde que todos los campos son obligatorios</p>
+    <form id="formulario">
+      <label>Fecha de solicitud:</label>
+      <input type="date" name="fecha_solicitud" required><br><br>
+
+      <label>Centro de costos:</label>
+      <select id="centro_costos" name="centro_costos" required>
+        <option value="" disabled selected>Seleccione una opción</option>
+      </select><br><br>
+
+      <label>Cliente:</label>
+      <select id="cliente" name="cliente" required>
+        <option value="" disabled selected>Seleccione un cliente</option>
+      </select><br><br>
+
+      <label>Cantidad de líneas:</label>
+      <input type="number" id="cantidad_lineas" min="1" required>
+      <button type="button" onclick="generarLineas()">Generar</button><br><br>
+
+      <label>Detalles:</label>
+      <div id="lineas" class="lineas-container"></div>
+
+      <label>Número cotización</label>
+      <input type="text" name="numero_cotizacion" id="numero_cotizacion" required>
+
+      <label>Link cotización</label>
+      <input type="url" name="link_cotizacion" id="link_cotizacion" required>
+
+      <button type="button" onclick="enviarFormulario()">Enviar</button>
+    </form>
+  </div>
+</body>
+</html>
+
