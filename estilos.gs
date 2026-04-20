@@ -2,241 +2,161 @@
 
 function initValidationsAndFormats() {
   const ss = SpreadsheetApp.getActive();
-  const sh = ss.getSheetByName('Datos');
-  if (!sh) throw new Error('No existe la hoja "Datos".');
+  const sh = ss.getSheetByName(CC_CONFIG.MAIN_SHEET_NAME);
+  if (!sh) throw new Error('No existe la hoja principal.');
 
   const lastRow = sh.getLastRow();
   if (lastRow < 2) return;
 
-  const rngEstado  = sh.getRange(2, 8,  lastRow - 1, 1); // H
-  const rngProceso = sh.getRange(2, 14, lastRow - 1, 1); // N
+  const headerMap = getHeaderMap_(sh);
+  const estadoCol = headerMap[normalizeHeader_('Estado')];
+  const procesoCol = headerMap[normalizeHeader_('Estado del proceso')];
 
-  const dvEstado = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['En curso','Descartada','Aprobada','Rechazada'], true)
-    .setAllowInvalid(false).build();
+  if (estadoCol) {
+    const rngEstado = sh.getRange(2, estadoCol, lastRow - 1, 1);
+    const dvEstado = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['En curso', 'Descartada', 'Aprobada', 'Rechazada'], true)
+      .setAllowInvalid(false)
+      .build();
+    rngEstado.setDataValidation(dvEstado);
+  }
 
-  const dvProceso = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Sin facturar','Facturado'], true)
-    .setAllowInvalid(false).build();
-
-  rngEstado.setDataValidation(dvEstado);
-  rngProceso.setDataValidation(dvProceso);
-
-  const rules = sh.getConditionalFormatRules().filter(r =>
-    !r.getRanges().some(g =>
-      (g.getColumn() === 8  && g.getLastColumn() === 8 ) ||
-      (g.getColumn() === 14 && g.getLastColumn() === 14)
-    )
-  );
-
-  rules.push(
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="en curso"')
-      .setBackground('#ffeb3b').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="descartada"')
-      .setBackground('#2196f3').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="aprobada"')
-      .setBackground('#4caf50').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="rechazada"')
-      .setBackground('#f44336').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($N2)="sin facturar"')
-      .setBackground('#ffeb3b').setRanges([sh.getRange(2,14, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($N2)="facturado"')
-      .setBackground('#4caf50').setRanges([sh.getRange(2,14, sh.getMaxRows()-1,1)]).build()
-  );
-
-  sh.setConditionalFormatRules(rules);
+  if (procesoCol) {
+    const rngProceso = sh.getRange(2, procesoCol, lastRow - 1, 1);
+    const dvProceso = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['Sin facturar', 'Facturado'], true)
+      .setAllowInvalid(false)
+      .build();
+    rngProceso.setDataValidation(dvProceso);
+  }
 }
 
 function ensureRowValidation_(sh, row) {
-  if (row < 2) return;
-  const dvEstado = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['En curso','Descartada','Aprobada','Rechazada'], true)
-    .setAllowInvalid(false).build();
-  const dvProceso = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Sin facturar','Facturado'], true)
-    .setAllowInvalid(false).build();
+  if (!sh || row < 2) return;
 
-  sh.getRange(row, 8).setDataValidation(dvEstado);
-  sh.getRange(row, 14).setDataValidation(dvProceso);
-}
+  const headerMap = getHeaderMap_(sh);
+  const estadoCol = headerMap[normalizeHeader_('Estado')];
+  const procesoCol = headerMap[normalizeHeader_('Estado del proceso')];
 
-function applyValidationAndFormatsToSheet_(sh) {
-  const lastRow = sh.getLastRow();
-  if (lastRow >= 2) {
-    sh.getRange(2, 8,  lastRow-1, 1).setDataValidation(
+  if (estadoCol) {
+    sh.getRange(row, estadoCol).setDataValidation(
       SpreadsheetApp.newDataValidation()
-        .requireValueInList(['En curso','Descartada','Aprobada','Rechazada'], true)
-        .setAllowInvalid(false).build()
-    );
-    sh.getRange(2, 14, lastRow-1, 1).setDataValidation(
-      SpreadsheetApp.newDataValidation()
-        .requireValueInList(['Sin facturar','Facturado'], true)
-        .setAllowInvalid(false).build()
+        .requireValueInList(['En curso', 'Descartada', 'Aprobada', 'Rechazada'], true)
+        .setAllowInvalid(false)
+        .build()
     );
   }
 
-  const rules = sh.getConditionalFormatRules().filter(r =>
-    !r.getRanges().some(g =>
-      (g.getColumn() === 8  && g.getLastColumn() === 8 ) ||
-      (g.getColumn() === 14 && g.getLastColumn() === 14)
-    )
-  );
+  if (procesoCol) {
+    sh.getRange(row, procesoCol).setDataValidation(
+      SpreadsheetApp.newDataValidation()
+        .requireValueInList(['Sin facturar', 'Facturado'], true)
+        .setAllowInvalid(false)
+        .build()
+    );
+  }
+}
 
-  rules.push(
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="en curso"')
-      .setBackground('#ffeb3b').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="descartada"')
-      .setBackground('#2196f3').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="aprobada"')
-      .setBackground('#4caf50').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($H2)="rechazada"')
-      .setBackground('#f44336').setRanges([sh.getRange(2,8, sh.getMaxRows()-1,1)]).build(),
+function applyValidationAndFormatsToSheet_(sh) {
+  if (!sh) return;
+  const lastRow = sh.getLastRow();
+  if (lastRow < 2) return;
 
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($N2)="sin facturar"')
-      .setBackground('#ffeb3b').setRanges([sh.getRange(2,14, sh.getMaxRows()-1,1)]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=LOWER($N2)="facturado"')
-      .setBackground('#4caf50').setRanges([sh.getRange(2,14, sh.getMaxRows()-1,1)]).build()
-  );
+  for (let r = 2; r <= lastRow; r++) {
+    ensureRowValidation_(sh, r);
+  }
 
-  sh.setConditionalFormatRules(rules);
+  aplicarEstilosEnHoja(sh);
 }
 
 function refreshFormatsAllUserSheets() {
   const ss = SpreadsheetApp.getActive();
   ss.getSheets()
-    .filter(s => s.getName() !== 'Datos' && /@/.test(s.getName()))
+    .filter(function (s) { return isUserSheet_(s.getName()); })
     .forEach(applyValidationAndFormatsToSheet_);
 }
 
-/* ===== Validación de factura multi-línea (1–8 alfanuméricos) ===== 
-const INVOICE_MAX_LEN_STYLES = 8; // nombre cambiado para evitar conflicto
-function validateInvoices_(value) {
-  const raw = String(value == null ? '' : value).trim();
-  if (!raw) return { ok: false, normalized: '', invalid: ['(vacío)'] };
+function aplicarEstilosEnHoja(hoja) {
+  if (!hoja) return;
 
-  const lines = raw.split(/\r?\n/);
-  const normalized = [];
-  const invalid = [];
+  const lastRow = hoja.getLastRow();
+  const lastCol = hoja.getLastColumn();
+  if (lastCol < 1) return;
 
-  lines.forEach((ln, i) => {
-    const code = (ln || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    if (code.length >= 1 && code.length <= INVOICE_MAX_LEN_STYLES) {
-      normalized.push(code);
-    } else {
-      invalid.push(`${i + 1}: "${ln}"`);
-    }
-  });
-
-  return {
-    ok: invalid.length === 0,
-    normalized: normalized.join('\n'),
-    invalid
-  };
-}*/
-
-function validateInvoices_(value) {
-  return {
-    ok: true,
-    normalized: String(value == null ? '' : value).trim(),
-    invalid: []
-  };
-}
-
-/* ====== Utilidades ====== */
-function setValueSafeWithValidation_(range, value) {
-  const rule = range.getDataValidation();
   try {
-    range.setValue(value);
-  } catch (err) {
-    range.clearDataValidations();
-    range.setValue(value);
-    if (rule) range.setDataValidation(rule);
+    hoja.getBandings().forEach(function (b) { b.remove(); });
+  } catch (error) {
+    console.error('aplicarEstilosEnHoja.removeBandings:', error);
   }
-}
 
-function ensureWrap_(range) {
-  range.setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
-}
+  const hdr = hoja.getRange(1, 1, 1, lastCol);
+  hoja.setFrozenRows(1);
+  hdr
+    .setFontWeight('bold')
+    .setBackground('#023047')
+    .setFontColor('#ffffff')
+    .setHorizontalAlignment('center')
+    .setVerticalAlignment('middle');
 
-function _daysDiff_(fromDate, toDate) {
-  if (!fromDate || !toDate) return NaN;
-  const tz = 'America/Bogota';
-  const d1 = new Date(Utilities.formatDate(new Date(fromDate), tz, 'yyyy-MM-dd'));
-  const d2 = new Date(Utilities.formatDate(new Date(toDate),   tz, 'yyyy-MM-dd'));
-  const MS_PER_DAY = 24 * 60 * 60 * 1000;
-  return Math.floor((d2 - d1) / MS_PER_DAY);
-}
+  const widths = [60, 110, 120, 160, 260, 120, 120, 120, 200, 120, 120, 110, 110, 140, 120, 120, 170, 240];
+  const limit = Math.min(widths.length, lastCol);
+  for (let c = 1; c <= limit; c++) {
+    try { hoja.setColumnWidth(c, widths[c - 1]); } catch (error) {}
+  }
 
-function _findRowById_(sheet, id) {
-  const last = sheet.getLastRow();
-  if (last < 2) return -1;
-  const ids = sheet.getRange(2, 1, last - 1, 1).getValues().flat();
-  const idx = ids.findIndex(v => v === id);
-  return (idx >= 0) ? (idx + 2) : -1;
-}
+  const dataRows = Math.max(0, lastRow - 1);
+  if (dataRows === 0) return;
 
-function _setDescartadaSafe_(sheet, row) {
-  setValueSafeWithValidation_(sheet.getRange(row, 8), 'Descartada'); // H
-  ensureRowValidation_(sheet, row);
-}
+  const datos = hoja.getRange(2, 1, dataRows, lastCol);
+  datos
+    .setHorizontalAlignment('center')
+    .setVerticalAlignment('middle')
+    .setWrap(true);
 
-/* ===== Triggers — Descarte automático 90 días ===== */
-function setupAutoDiscardTrigger() {
-  const handler = 'autoDescartar90Dias';
-  deleteTriggersByHandler_(handler);
-  ScriptApp.newTrigger(handler)
-    .timeBased()
-    .everyDays(1)
-    .atHour(8)
-    .create();
+  const applyCebra = function (colStart, colCount) {
+    if (colStart > lastCol || colCount <= 0) return;
+    const count = Math.min(colCount, lastCol - colStart + 1);
+    try {
+      hoja
+        .getRange(2, colStart, dataRows, count)
+        .applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, false, false);
+    } catch (error) {
+      console.error('aplicarEstilosEnHoja.applyCebra:', error);
+    }
+  };
 
-  SpreadsheetApp.getUi().alert(
-    'Descarte automático activado',
-    'Se programó autoDescartar90Dias para ejecutarse todos los días a las 08:00.',
-    SpreadsheetApp.getUi().ButtonSet.OK
-  );
-}
+  applyCebra(1, 7);
+  if (lastCol >= 9) applyCebra(9, 5);
+  if (lastCol >= 15) applyCebra(15, lastCol - 14);
 
-function deleteTriggersByHandler_(handlerName) {
-  ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === handlerName) {
-      ScriptApp.deleteTrigger(t);
+  try {
+    datos.setBorder(true, true, true, true, false, false, '#000000', SpreadsheetApp.BorderStyle.SOLID);
+  } catch (error) {}
+
+  const headerMap = getHeaderMap_(hoja);
+  ['Fecha de solicitud', 'Fecha de inicio', 'Fecha final', 'Fecha de factura'].forEach(function (h) {
+    const idx = headerMap[normalizeHeader_(h)];
+    if (idx) {
+      try { hoja.getRange(2, idx, dataRows, 1).setNumberFormat('dd/MM/yyyy'); } catch (error) {}
     }
   });
-}
 
-function onOpen() {
-  const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Control Comercial')
-    .addItem('▶ Ejecutar descarte 90 días ahora', 'autoDescartar90Dias')
-    .addItem('⏰ Activar disparador diario (08:00)', 'setupAutoDiscardTrigger')
-    .addItem('🗑 Desactivar disparador diario', 'disableAutoDiscardTrigger')
-    .addToUi();
+  try {
+    for (let r = 2; r <= lastRow; r++) hoja.setRowHeight(r, 28);
+  } catch (error) {}
 
-  // Aplica estilos si la función existe
-  if (typeof aplicarEstilosATodas === 'function') {
-    aplicarEstilosATodas();
+  const facturaCol = headerMap[normalizeHeader_('Numero factura')];
+  if (facturaCol) {
+    try { hoja.getRange(2, facturaCol, dataRows, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP); } catch (error) {}
   }
 }
 
-function disableAutoDiscardTrigger() {
-  deleteTriggersByHandler_('autoDescartar90Dias');
-  SpreadsheetApp.getUi().alert(
-    'Descarte automático desactivado',
-    'Se eliminaron los disparadores de autoDescartar90Dias.',
-    SpreadsheetApp.getUi().ButtonSet.OK
-  );
+function aplicarEstilosATodas() {
+  const ss = SpreadsheetApp.getActive();
+  ss.getSheets().forEach(function (sh) {
+    const name = sh.getName();
+    if (name === CC_CONFIG.MAIN_SHEET_NAME || isUserSheet_(name)) {
+      aplicarEstilosEnHoja(sh);
+    }
+  });
 }

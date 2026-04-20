@@ -4,11 +4,6 @@ function doGet() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function safeSheetNameFromEmail_(email) {
-  if (!email) return 'usuario_sin_correo';
-  return String(email).replace(/[^A-Za-z0-9@._-]/g, '_').slice(0, 99);
-}
-
 function ensureUserSheet_(email) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const hojaDatos = ss.getSheetByName('Datos');
@@ -161,18 +156,7 @@ function autoDescartar90Dias() {
 
 }
 
-/* ===== Menú y trigger diario ===== */
-
-function onOpen() {
-  const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Control Comercial')
-    .addItem('Aplicar validaciones/formatos (Datos)', 'initValidationsAndFormats')
-    .addItem('Aplicar a todas las hojas de usuario', 'refreshFormatsAllUserSheets')
-    .addSeparator()
-    .addItem('Descartar ≥90 días (ahora)', 'autoDescartar90Dias')
-    .addItem('Instalar job diario (07:00 Bogotá)', 'installDailyAutoDiscard_')
-    .addToUi();
-}
+/* ===== Trigger diario de descarte ===== */
 
 function installDailyAutoDiscard_() {
   // Elimina triggers previos de la misma función
